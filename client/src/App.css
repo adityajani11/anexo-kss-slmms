@@ -1,0 +1,14 @@
+@font-face {
+  font-family: "Nilkanth";
+  src: url("./fonts/Nilkanth.ttf") format("truetype");
+}
+
+body, input, textarea {
+  font-family: "Nilkanth", "Nirmala UI", sans-serif;
+}
+
+.ql-editor {
+  font-family: 'Nilkanth', 'Nirmala UI', sans-serif !important;
+  font-size: 18px;
+  line-height: 1.6;
+}
