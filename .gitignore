@@ -1,0 +1,12 @@
+.env
+/s3-backup/
+/nginx/
+/mongo-2026-06-21/
+/client/node_modules/
+/client/build/
+/client/.env
+/server/node_modules/
+/server/.env
+*.pem
+slmms_deploy_key
+slmms_deploy_key.pub
