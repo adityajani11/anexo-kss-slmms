@@ -12,16 +12,28 @@ dotenv.config();
 
 const app = express();
 
+// The app is normally placed behind Nginx on the Hostinger server.  This lets
+// Express use the original visitor IP (for example, in rate limiting).
+app.set("trust proxy", 1);
+
 // Middleware
 app.use(express.json());
 app.use(bodyParser.json());
 
-const allowedOrigins = [
-  "https://krishnaschoolgroupksd.in",
-  "https://www.krishnaschoolgroupksd.in",
+const localOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
+];
+
+// Comma-separated frontend origins. Set this on the API host, for example:
+// CLIENT_ORIGINS=https://your-project.vercel.app,https://your-domain.com
+const allowedOrigins = [
+  ...localOrigins,
+  ...(process.env.CLIENT_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean),
 ];
 
 app.use(
@@ -29,10 +41,12 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error(`CORS policy does not allow access from origin ${origin}`));
+      return callback(
+        new Error(`CORS policy does not allow access from origin ${origin}`),
+      );
     },
     credentials: true,
-  })
+  }),
 );
 
 // Connect to MongoDB
@@ -70,7 +84,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start the Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const PORT = process.env.PORT || 5001;
+const HOST = process.env.HOST || "127.0.0.1";
+app.listen(PORT, HOST, () => {
+  console.log(`Server running at http://${HOST}:${PORT}`);
 });
